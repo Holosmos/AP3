@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+import argparse
+
 def maximum(n,m):
 	if n>= m:
 		return n
@@ -76,8 +78,21 @@ def PairsImpairs(x):
 	for i in range(1,x):
 		chaine += " " + str(2*(x-i)-1)
 	print(chaine)		
-PairsImpairs(5)
+	
 
+parser = argparse.ArgumentParser()
+parser.add_argument("param", type = int)
+
+args = parser.parse_args()
+
+PairsImpairs(args.param)
+
+
+
+
+
+
+	
 
 
 	
