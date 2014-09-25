@@ -3,18 +3,41 @@
 import argparse
 
 def maximum(n,m):
-	if n>= m:
-		return n
-	return m
+	return (n+m+abs(n-m))/2
 
+#def milieu(n,m,p):
+#	l = [n,m,p]
+#	l.sort()
+#	return l[1]
 def milieu(n,m,p):
-	l = [n,m,p]
-	l.sort()
-	return l[1]
-#print(milieu(1,2,3))
-#print(milieu(1,3,2))
-#print(milieu(3,1,3))
+	a = maximum(n,maximum(m,p))
+	if n==m or n == p or m == p:
+		return maximum(n,maximum(m,p))
+	if a == p:
+		return maximum(n,m)
+	return milieu(p,n,m)	
+print(milieu(1,2,3))
+print(milieu(1,3,2))
+print(milieu(3,1,3))
 
+def croucrou(n,m,p):
+	a = max(n,m)
+	b = max(m,p)
+	c = max(p,n)
+	
+	d = max(a,b)
+	
+	if d == n:
+		return max(m,p)
+	else:
+		if d ==m :
+			return max(n,p)
+		else:
+			return max(n,m)
+						
+print(croucrou(1,2,3))
+print(croucrou(1,3,2))
+print(croucrou(3,1,3))		
 
 i = 1
 a= "0"
@@ -80,12 +103,10 @@ def PairsImpairs(x):
 	print(chaine)		
 	
 
-parser = argparse.ArgumentParser()
-parser.add_argument("param", type = int)
-
-args = parser.parse_args()
-
-PairsImpairs(args.param)
+#parser = argparse.ArgumentParser()
+#parser.add_argument("param", type = int)
+#args = parser.parse_args()
+#PairsImpairs(args.param)
 
 
 
