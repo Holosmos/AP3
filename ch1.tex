@@ -1,0 +1,101 @@
+\documentclass{mybourbaki}
+\titre{Algorithmique : tris naïfs}
+
+\begin{document}
+\section*{Introduction des notations}
+
+\paragraph{Objectifs}On se fixe les objectifs suivant pour ce cours
+\begin{itemize}
+\item compter le nombre d'opérations effectué par des algorithmes ;
+\item créer des programmes conçus pour toutes les valeurs d'un certain type.
+\end{itemize}
+L'évaluation de complexité est \textit{asymptotique}. Le nombre d'opérations est exprimé en fonction de la \og taille \fg{}\note{Par exemple : pour un entier $x\in \N$ ça peut être la longueur de son expression en décimal ; pour une liste cela peut être le nombre d'éléments de la liste, si $l$ est de longueur $n$ alors sa taille peut être : ${\rm taille}(l) = \abs{l} = \sum_{i=0}^{n-1}{\rm taille}(l[i])$} des entrées.
+
+\definition{ 
+Soient $f,g : \N\vers \R^+$. On dit que $f = \rO(g)$ si : \[\exists C \in \R^+, \exists n_0 \in \N, \forall n \geq n_0, \; f(n) \leq C\cdot g(n).\]
+}{Notation $\rO()$}
+Dans la suite, $f: \N \vers \R^+$ sera l'application qui à une entrée de taille $n$ associe le nombre d'opérations nécessaires.
+
+\definition{ 
+Soient $f,g : \N \vers \R^+$. On dit que $f = \Omega(g)$ si : \[ \exists C\in \R^+, \exists n_0 \in \N,\forall n\geq n_0 , \; f(n) \geq Cg(n). \]
+}{Notation $\Omega()$}
+
+\definition{ 
+Soient $f,g : \N \vers \R^+$. On dit que $f = \Theta(g)$ si : \[ f = \rO(g) \et f = \Omega(g).\]
+}{Notation $\Theta()$}
+
+\paragraph{Exercice}Montrer que $f = \rO(g)$ lorsque :
+\begin{enumerate}
+\item $f(n) = n^{d}$ et $g(n) = n^{d+i}, i\geq 0$ ;
+\item $f(n) = \log n$ et $g(n) = n^{\eps}, \; \eps> 0$ ;
+\item $f(n) = n^{k}$ et $g(n) = r^{n}$ avec $r>1$ et $k\in \N$.
+\end{enumerate}
+
+\definition{ 
+Voici les éléments comptés :
+\begin{itemize}
+\item le nombre d'affectations ;
+\item le nombre de comparaisons ;
+\item le nombre de divisions :
+\item ...
+\end{itemize}
+}{Opérations dans les algorithmes}
+\paragraph{Exemple}Le nombre de divisions effectuées par l'algorithme d'Euclide pour $a,b$ (avec $a>b$) est une fonction de $b$ : $\Theta(\log b)$.
+
+\section{Tris}
+\paragraph{Objectifs}Faire un tour d'horizon des algorithmes de tris.
+\paragraph{Opérations}Les opérations intéressantes pour les tris :
+\begin{itemize}
+\item comparaisons ;
+\item affectation et échanges de variables.
+\end{itemize}
+
+\proposition{
+Les propriétés suivantes indiquent que $\N$ est totalement ordonné avec $<$ : 
+\[ 
+\systeme{
+\forall x\neq y, &\; x< y \ou y< x, \\
+\forall x,y,z, &\; x<y \et y<z \implique < z .
+}
+ \]
+}{$\N$ est totalement ordonné}
+
+\definition{ 
+\textit{Trier} un tableau ou une liste d'entiers : $T$ de longueur $n\in \N$ c'est trouver une permutation $\sigma \in S_n$ telle que : \[ \forall i \leq n-1, \; T[\sigma(i)] \leq T[\sigma(i+1)].\]
+}{Trier}
+\paragraph{Exemple}Pour $T=(10,9,7,6,8)$ on a : \[\sigma = \matrice{0 & 1 & 2 & 3 & 4 \\ 4 & 3 & 1 & 0 & 2}. \]
+
+\lemme{ 
+Pour tout $n\in \N^{*}$, toute permutation de $S_n$ peut s'écrire comme un produit de transpositions.
+}{}
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
