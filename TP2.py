@@ -31,7 +31,7 @@ def fib2(n,liste = [0,1]):
 # print fib2(18)
 # print time.clock()
 # print fib2(30)
-# print time.clock
+# print time.clock()
 
 def fib3(n):
 	if n<2:
@@ -53,6 +53,11 @@ def fib3Aux(n):
 	
 #print fib3Aux(6)
 	
+print time.clock()
+print fib2(999)
+print time.clock()
+print fib3Aux(999)[1]
+print time.clock()	
 
 def fib4(n):
 	phi1 = (1+cmath.sqrt(5))/2.
@@ -239,11 +244,10 @@ def askEq(liste):
 		except AssertionError :
 			print "Entrez une chaine valide, comme le modele et verifez que n est premier avec la liste : " + str([i[1] for i in liste])
 		
-nbEq = askPositif("Entrez le nombre d'equations : ")
-
-liste_eq=[]
-for i in range(nbEq):
-	askEq(liste_eq);
-
-a = sol([i[0] for i in liste_eq],[i[1] for i in liste_eq])
-print str(a) + " est solution du systeme d'equations."
+# nbEq = askPositif("Entrez le nombre d'equations : ")
+# liste_eq=[]
+# for i in range(nbEq):
+# 	askEq(liste_eq);
+# 
+# a = sol([i[0] for i in liste_eq],[i[1] for i in liste_eq])
+# print str(a) + " est solution du systeme d'equations."
