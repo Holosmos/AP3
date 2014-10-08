@@ -1,5 +1,6 @@
 \documentclass{mybourbaki}
 \titre{Algorithmique : tris naïfs}
+\lstset{language=Python, numbers = left, frame =single}
 
 \begin{document}
 \section*{Introduction des notations}
@@ -42,7 +43,7 @@ Voici les éléments comptés :
 }{Opérations dans les algorithmes}
 \paragraph{Exemple}Le nombre de divisions effectuées par l'algorithme d'Euclide pour $a,b$ (avec $a>b$) est une fonction de $b$ : $\Theta(\log b)$.
 
-\section{Tris}
+\section{Permutations}
 \paragraph{Objectifs}Faire un tour d'horizon des algorithmes de tris.
 \paragraph{Opérations}Les opérations intéressantes pour les tris :
 \begin{itemize}
@@ -69,6 +70,198 @@ Les propriétés suivantes indiquent que $\N$ est totalement ordonné avec $<$ :
 Pour tout $n\in \N^{*}$, toute permutation de $S_n$ peut s'écrire comme un produit de transpositions.
 }{}
 
+\section{Tri à bulle}
+\subsection{Principe}
+Le principe de cet algorithme est de faire \og remonter \fg{} les valeurs les plus grandes vers la fin de la liste jusqu'à ce que le tableau soit \textit{trié}.
+
+\definition{ 
+Soit $T$ un tableau.
+
+On note sa longueur ${\rm longueur}(T) = \abs{T} = n$. On indice le tableau de $0$ à $n-1$.
+
+Un tableau est \textit{trié} si : \[ \forall i \in \ens{0,\ldots,n-2}, \; T[i] \leq T[i+1].\]
+}{}
+
+On peut écrire un premier algorithme pour tester si le tableau est bien trié.
+\begin{lstlisting}
+function tableauTrie(T)
+	n = longueur(T)
+	for i from 0 to n-2 do
+		if T[i] > T[i+1] then return false
+\end{lstlisting}
+
+\subsection{Principe détaillé du tri Bulle (Bubble sort)}
+On fait dans l'ordre :
+\begin{itemize}
+\item un balayage successif de $T$ de gauche à droite ;
+\item au $k$-ième balayage :
+\begin{itemize}
+\item on parcourt les $n-k$ valeurs les plus à gauche ;
+\item si une position $j$ est telle que $T[j] >T[j+1]$ alors on échange $T[j]$ et $T[j+1]$.
+\end{itemize}
+\end{itemize}
+
+\paragraph{\'Ecriture de l'algorithme}
+Une première écriture donne :
+\begin{lstlisting}
+function triBulle(T)
+	n = longueur(T)
+	for i from n-1 to 0 do
+		for j from 0 to i-1 do
+			if T[j] > T[j+1] then
+				T[j],T[j+1] = T[j+1],T[j]
+	return T			
+\end{lstlisting}
+En tenant compte du fait que si un balayage entier est effectué sans modification alors c'est que le tableau est trié, on obtient :
+\begin{lstlisting}
+function triBullePlus(T)
+	n = longueur(T)
+	i = n-1
+	repeat
+		trie = true
+		for j from 0 to i-1 do
+			if T[j] > T[j+1] then
+				T[j],T[j+1] = T[j+1],T[j]
+				trie = false
+		i = i-1	
+	until trie = true
+	return T	
+\end{lstlisting}
+
+\subsection{Preuve de correction}
+On va montrer l'existence d'invariants.
+
+\proposition{ Soit $k\in\ens{0,\ldots,n-1}$. Si $i = k$ alors :
+\begin{enumerate}
+\item $T[k+1] \leq T[k+2] \leq \ldots \leq T[n-1]$ ;
+\item $\forall i < k+1, T[i] \leq T[k+1]$.
+\end{enumerate}
+}{Invariants}
+\demonstration{ 
+Si $n-1 -k = 0$ alors c'est bien vérifié.
+
+Supposons $l$ itérations de l'algorithme et que la propriété est vraie pour $n-1-k =l$. Dans ce cas, à l'itération $l+1$ :
+\begin{itemize}
+\item La boucle interne met en position $n-1-l$ la plus grande des valeurs $v$ entre les positions $0$ et $n-1-l$ de $T$.
+\item Par hypothèse de récurrence, $v\leq T[k+1]\leq T[k+2] \leq \ldots \leq T[n-1]$, on a donc : \[ T[k] \leq T[k+1] \leq \ldots \leq T[n-1] \et \forall i<k, T[i] \leq T[k].\]
+\end{itemize}
+}{Par induction/récurrence sur $n-1-k$}
+
+\subsection{Analyse de complexité}On note $A$ un algorithme, $T$ une entrée de $A$ (ici un tableau) et $C_A(T)$ le nombre d'opérations\note{Ici : échanges, comparaisons et affectations.} que l'algorithme $A$ effectue sur l'entrée $T$.
+
+\definition{ 
+La \textit{complexité de $A$ dans le pire des cas} est la fonction : \[ \fonc{\cC_A}{\N}{\N}{n}{\max_{T : \abs{T} = n} C_A(T)}.\]
+
+C'est-à-dire le nombre d'opération maximal sur une entrée de taille $n$.
+}{}
+
+\paragraph{Remarque}Soit $f:\N\vers \N$ :
+\begin{itemize}
+\item La complexité de $A$ est en $\rO(f(n))$  si $$\cC_A(n) \leq \rO(f(n)).$$
+\item La complexité de $A$ est en $\Omega(f(n))$ s'il existe $n_0$, $T$ de taille $n\geq n_0$ et $c\in \R$ tel que \[ \cC_A(T) \geq c \cdot f(n).\]
+\end{itemize}
+
+\paragraph{Tri Bulle}On va essayer d'établir le nombre de comparaisons $C(n)$ :
+\begin{itemize}
+\item pour $n$ balayages :
+\begin{itemize}
+\item au $k$-ième balayage on effectue $n-k-1$ comparaisons.
+\end{itemize}
+\end{itemize}
+On a alors : \[ C(n) = (n-1) + (n-2) +\ldots + 1 = \sum_{i=1}^{n-1}\frac{n(n-1)}{2}.\] Ainsi $C(n)$ est en $\rO(n^{2})$ et en $\Omega(n^{2})$. Le nombre d'échanges, $E(n)$ est en $\Omega(n^{2})$ avec comme pire des cas un tableau trié à l'envers.
+
+\section{Tri par sélection}
+\subsection{Principe}Le principe du tri par sélection est de chercher le maximum et de le placer à la fin. On itère avec $T$ entre les indices $0$ et $n-2$ (avec $n = \abs{T}$).
+
+L'algorithme qui trouve le maximum :
+\begin{lstlisting}
+function posMax(T,p,f)
+	k = p
+	for i from p+1 to f do
+		if T[i] > T[k] then
+			k = i
+	return k		
+\end{lstlisting}
+
+L'algorithme de tri en version itérative :
+\begin{lstlisting}
+function triSelectionIter(T,p,f)
+	for i from f to p+1 do
+		j = posMax(T,p,i)
+		T[i],T[j] = T[j],T[i]
+\end{lstlisting}
+Et en version récursive :
+\begin{lstlisting}
+function triSelectionRec(T,p,f)
+	if p < f then
+		j = posMax(T,p,f)
+		T[f],T[j] = T[j],T[f]
+		triSelectionRec(T,p,f-1)
+\end{lstlisting}
+
+\subsection{Analyse de complexité (pour la version récursive)}
+On compte le nombre d'échanges, $E(n)$, les affectations, $A(n)$, et les comparaisons, $C(n)$.
+
+Par récurrence :
+\begin{itemize}
+\item Si $\abs{T}= 0,1$ alors $C(0) = E(0) = A(0) = 0$.
+\item Si $\abs{T} = 2$ un appel à posMax, $C(1) = A(1) = 1$ et $E(1) = 1$.
+\item Si $\abs{T} = n+1$ alors :
+ \begin{enumerate}
+ \item un appel à posMax avec sur $T$ : $n$ comparaisons et $n$ affectations (au plus) ;
+ \item un échange ;
+ \item un appel à triSelectRec sur le sous-tableau de taille $n-1$.
+ \end{enumerate}
+ On a donc $C(n+1) = n+C(n)$, $A(n+1) \leq n + C(n)$ et $E(n+1) \leq 1 + E(n)$.
+\end{itemize}
+Au final $C(n)$ et $A(n)$ sont en $\rO(n^{2})$ et en $\Omega(n^{2})$ (pour un tableau trié en ordre décroissant) et $E(n)$ est en $\rO(n)$ et en $\Omega(n)$.
+
+\section{Recherche dans un tableau trié}
+Rechercher est une activité essentielle en informatique. L'objectif est de le faire à moindre coût. On effectue un tri pour pouvoir rechercher efficacement.
+
+\subsection{Recherche naïve}
+Elle consiste à essayer toutes les possibilités :
+\begin{lstlisting}
+function rechercheBinaire(T,m,n,x)
+	j = m
+	while j < n+1 do
+		if T[j] = x then return j
+		else j = j+1
+\end{lstlisting}
+
+\subsection{Recherche dichotomique}
+\paragraph{Principe}On compare l'élément $x$ à chercher avec la valeur du milieu du tableau. En fonction de la réponse on dirige la recherche suivante vers l'une des deux moitiés du tableau.
+
+\begin{lstlisting}
+function rechercheBinaire(T,l,u,x)
+	if u < l then return
+	m = int((l+u)/2)
+	if T[m] = x then return m
+	if T[m] > x then
+		return rechercheBinaire(T,l,m-1,x)
+	return rechercheBinaire(T,m+1,u,x)	
+\end{lstlisting}
+
+\subsection{Complexité de la recherche dichotomique}
+
+On va compter le nombre de comparaisons, $C(n)$.
+\begin{itemize}
+\item $C(0) = 0$ ;
+\item $C(1) =1$ (car on vérifie si c'est $x$ ou non) ;
+\item si $u>l$, $m-l \leq u - m \leq m-l+1$ et alors $1+\max(m-l,u-m) \leq \frac{u-l+1}{2}$ et donc $C(n) \leq 1 + C(\lfloor \frac{n}{2}\rfloor)$.
+\end{itemize}
+
+\lemme{ 
+La recherche dichotomique nécessite au plus \[ C(n) \leq \lfloor \log_2(n) + 1 \rfloor \leq \log_2 n +1\]
+}{}
+\paragraph{Preuve en exercice}Par récurrence sur $k = \lfloor \log_2 n \rfloor$. Indication : \[ C(n) \leq 1 + C(\lfloor n/2 \rfloor) \leq 1 + (\lfloor \log_2 n/2 \rfloor + 1) \leq 1 + \lfloor \log_2 n \rfloor.\]
+
+\subsection{Preuve de correction}
+Il faut :
+\begin{enumerate}
+\item vérifier que l'algorithme termine toujours (i.e. la taille des tableaux diminue strictement) ;
+\item vérifier qu'il renvoie bien la bonne position si, et seulement si, $x$ est dans le tableau.
+\end{enumerate}
 
 \end{document}
 
