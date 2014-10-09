@@ -6,6 +6,7 @@ def tern(cond, a,b):
 #Exercice 1
 import time
 import cmath
+import math
 def fib1(n):
 	if n <2:
 		return n
@@ -53,11 +54,11 @@ def fib3Aux(n):
 	
 #print fib3Aux(6)
 	
-print time.clock()
-print fib2(999)
-print time.clock()
-print fib3Aux(999)[1]
-print time.clock()	
+# print time.clock()
+# print fib2(999)
+# print time.clock()
+# print fib3Aux(999)[1]
+# print time.clock()	
 
 def fib4(n):
 	phi1 = (1+cmath.sqrt(5))/2.
@@ -251,3 +252,69 @@ def askEq(liste):
 # 
 # a = sol([i[0] for i in liste_eq],[i[1] for i in liste_eq])
 # print str(a) + " est solution du systeme d'equations."
+
+
+# Exercice 4
+
+def fonc1(i,n):
+	list = [n]
+	for k in range(i-1):
+		if n == 1:
+			list.append(1)
+		elif n%2 == 0:
+			list.append(n/2)
+			n = n/2
+		else :
+			list.append(3*n+1)
+			n = 3*n+1
+	return list
+
+# print fonc1(20,7)				
+
+# Exercice 5
+
+def prim(n):
+	list = [i for i in range(2,int(math.sqrt(n))+1)]
+	for k in list:
+		for i in range(2,int(math.sqrt(n))+1/k +1):
+			try:
+				list.remove(i*k)
+			except ValueError:
+				True	
+	for k in list:
+		if n%k == 0:
+			return k
+	return 0				
+
+# for i in range(2,50):
+# 	n = prim(i)
+# 	if n == 0:
+# 		print i
+
+# Exercice 6
+
+def per(n,liste=[3,0,2]):
+	if n <0:
+		return -1
+	a = len(liste)
+	if n == a-1 or n == a-2 or n == a-3:
+		return liste[n]
+	liste.append(liste[a-3]+liste[a-2])
+	return per(n,liste)
+
+def PriPer(n):
+	if per(n)%n == 0:
+		return 0
+	return -1			
+
+for i in range(2,1000):
+	n = prim(i)
+	k = PriPer(i)
+	if n == 0:
+		if k == -1:
+			print "fail"
+	elif k==0:
+		print "fail"
+			
+
+

@@ -15,14 +15,14 @@ Raphaël \textsc{Alexandre}
 \section*{Suite de \textsc{Fibonacci}}
 
 Une suite, $(F_n)_{n\in \N}$, de \textsc{Fibonacci} est décrite par la relation de récurrence : \[ \forall n \in \N, \; F_{n+2} = F_{n+1} + F_n.\]
-On prendra pour conditions initiales dans la suite : \[ F_0 = 0 \; ; \;  F_1 = 1.\]
+On prendra pour conditions initiales dans la suite de l'écrit : \[ F_0 = 0 \; ; \;  F_1 = 1.\]
 
 \section{Algorithme naïf}
 On écrit un premier algorithme naïf à partir de la définition de la suite par la relation de récurrence.
 
 \begin{lstlisting}[frame=single] 
 def fib1(n):
-	if n <2:
+	if n < 2:
 		return n
 	return fib1(n-1)+fib1(n-2) 
 \end{lstlisting}
@@ -36,10 +36,10 @@ C'est donc aussi une suite de \textsc{Fibonacci} et les conditions initiales son
 
 Si on s'intéresse au nombre d'appels, $A_k(n)$ à la valeur $F_k$ pour $k<n$ fixé on a :
 \begin{itemize}
-\item $A_k(p) = 0$ pour $p<k$, $A_k(k) = 1$ ;
+\item $A_k(p) = 0$ pour $p<k$, $A_k(k) = 0$ et $A_k(k+1) = 1$ ;
 \item $A_k(n+2) = A_k(n+1) + A_k(n)$.
 \end{itemize}
-On en déduit naturellement $A_k(n) = A(n-k+1)$ pour $n>k$ (on peut naturellement l'étendre à $n\geq k$).
+On en déduit naturellement $A_k(n) = A(n-k)$ pour $n>k$ (on peut naturellement l'étendre à $n\geq k$).
 
 Une mesure pour évaluer le temps d'exécution de l'algorithme pour $F(18)$ et $F(30)$ donne :
 \begin{lstlisting}[frame = single]
