@@ -1,0 +1,112 @@
+\documentclass{mybourbaki}
+\titre{Tri en tas}
+\usepackage[all]{xy}
+
+\lstset{language=Python, numbers = left, frame =single}
+
+\begin{document}
+\section*{Introduction}
+C'est une version élaborée du tri par sélection. Elle utilise le principe suivant :
+\paragraph{Principe}Une fois le plus grand élément localisé le tableau restant n'est pas \og inconnu \fg{}.
+
+\section{Tas et mise en tas}
+\subsection{Définitions, principes}
+ Pour la suite, on suppose que $A$ est un tableau indicé de $1$ à $n$.
+ 
+\definition{ 
+On dit que $A$ est \textit{organisé en tas} à la position $i\leq n$ si, et seulement si, l'une des trois conditions suivantes est satisfaite :
+\begin{enumerate}
+\item $2i > n$ ;
+\item $2i = n$ et $A[i] \geq A[n]$ ;
+\item $2i < n$ et $A[i] \geq \max(A[2i],A[2i+1])$ et $A$ organisé en tas aux positions $2i$ et $2i+1$.
+\end{enumerate}
+}{}
+
+\definition{ 
+$A$ \textit{est en tas} si $A$ est en tas en toute position $i\leq n$.
+}{} 
+\paragraph{Exemple}En prenant le tableau : \[ \matrice{7 & 6 & 5 & 1 & 4 & 3 & 2}\]
+\begin{itemize}
+\item en position $1$ on a $2i = 2 < n =7$ donc il faut vérifier $7 > 6$ et $7 >5$ ce qui est le cas et il faut vérifier que $A$ est organisé en tas aux positions $2$ et $3$ :
+\begin{itemize}
+\item en position $2$, on a bien $6 > 1$ et $6>4$ ainsi que $1$ et $4$ en tas (puisqu'en positions supérieures à $n/2$) ;
+\item en position $3$, on a bien $5 > 3$ et $5 > 2$.
+\end{itemize}
+\end{itemize}
+ \paragraph{Remarques}$A$ est toujours organisé en tas pour les positions de $\lfloor n/2 \rfloor +1 $ à $n$. Si $A$ est trié en ordre décroissant alors $A$ est organisé en tas. Si $A$ est en tas alors la plus grande valeur de $A$ est en première position.
+ 
+\definition{ 
+Soit $i,j \in \ens{1,\ldots,n}$. On dit que $j$ \textit{descend} de si l'une des conditions suivantes :
+\begin{itemize}
+\item $j=i$ ;
+\item $j = 2i$ ;
+\item $j = 2i+1$ ;
+\item $2i\leq n$ et $j$ descend de $2i$ :
+\item $2i +1 \leq n$ et $j$ descend de $2i+1$.
+\end{itemize} 
+}{} 
+\[ 
+\xymatrix{
+& &&\ar[lld] i\ar[d] \ar[rrd]&&&\\
+&\ar[ld] 2i \ar[rd] & & \ar[ll]i \ar[rr]& &\ar[ld] 2i +1 \ar[rd]& \\
+2(2i) & & 2(2i)+1 & & 2(2i +1)& & 2(2i+1) +1 
+}
+\]
+
+\definition{ 
+On dit que :
+\begin{itemize}
+\item $i$ est un descendant de \textit{niveau} $0$ de $i$ ;
+\item si $x$ descendant du niveau $l\geq 0$ de $2i$  ou $2i+1$ alors $x$ descendant de \textit{niveau} $l+1$ de $i$.
+\end{itemize}
+}{}
+
+\paragraph{Remarque}Par définition, si la propriété de tas est vérifiée en $i$, alors la propriété de tas est vérifiée par tous les descendants de $i$. En particulier, si $x$ descend de $i$ alors $$A[i] \geq A[x].$$Par conséquent si $A$ est en tas, $A[1] \geq A[i]$ pour tout $i\in \ens{1,\ldots,n}$ car tout $x\in \ens{1,\ldots,n}$ descend de $1$.
+
+\paragraph{Exemple}Organiser en tas à la position $A$ en sachant que $A$ est organisé en tas à la position $2$ et $3$. On prend $$A = \matrice{4 & 6 & 7 & 3 & 2 & 5 & 1}.$$
+On compare $A[1]$ avec $A[2]$ et $A[3]$, on permute le plus grand des deux :
+\[ A = \matrice{7 & 6 & 4 & 3 & 2 & 5 & 1},\]$A$ est alors en tas en position $1$ seulement vis-à-vis des ses voisins immédiats. $A$ n'est plus en tas pour la position $3$ : on répète le processus, \[A = \matrice{7 & 6 & 5 & 3 & 2 & 4 & 1} \]et le tableau est alors en tas.
+
+\paragraph{L'algorithme}On fait les hypothèses suivantes pour cet algorithme : on l'invoque sur la position $p\leq \lfloor n/2\rfloor$, fait en sorte que la propriété de tas soit satisfaite en $p$ à condition qu'elle le soit en $2p$ et en $2p+1$ (si cela a un sens). On suppose $T$ indicé de $1$ à $n$ (simplifie les notations).
+\begin{lstlisting}
+function heapBubble(T,p,fin)
+	test = false
+	repeat
+		l = 2*p
+		r = 2*p+1
+		m = p
+		if l < fin and T[l] > T[m] then
+			m = l
+		if r < fin and T[r] > T[m] then
+			m = r
+		if m != p then
+			T[m], T[p] = T[p], T[m]
+			p = m
+		else test = true
+	until test = true			 	
+\end{lstlisting}
+L'algorithme suivant met en tas sur toutes les positions.
+\begin{lstlisting}
+function Heapify(T)
+	n = longueur(T)
+	for p from int(n/2) to 1 do
+		heapBubble(T,p,n+1)
+\end{lstlisting} 
+ 
+L'algorithme suivant fait le tri par tas :
+\begin{lstlisting}
+function HeapSort(T)
+	n = longueur(T)
+	Heapify(T)
+	for i from n to 2 do
+		T[i], T[1] = T[1], T[i]
+		HeapBubble(T,1,i)
+\end{lstlisting} 
+ 
+\paragraph{Exemple}On prend : \[ A = \matrice{1 & 6 & 5 & 7 & 3 & 2 & 4 }\] qui en tas est : \[\matrice{7 & 6 & 5 & 3 & 2 & 4 & 1}.\]On permute $T[1]$ et $T[n]$ : \[ \matrice{1 & 6 & 5 & 3 & 2 & 4 & \vline & 7}.\]On met le sous-tableau en tas pour la position $1$ : \[ \matrice{6 & 1 & 5 & 3 & 2 & 4 & \vline & 7} \to\matrice{6 & 3 & 5 & 1 & 2 & 4 & \vline & 7}.\]On permute $T[1]$ et $T[n-1]$ : \[ \matrice{4 & 3 & 5 & 1 & 2 & \vline & 6 & 7}.\]On met en tas pour la position $1$ : \[ \matrice{5 & 3 & 4 & 1 & 2 & \vline & 6 & 7}.\]On permute $T[1]$ et $T[n-2]$ : \[ \matrice{2 & 3 & 4 & 1 & \vline & 5 & 6 & 7}. \]On met en tas pour la position $1$ : \[ \matrice{4 & 3 & 2 & 1 & \vline & 5 & 6 & 7}.\]On permute $T[1]$ et $T[n-3]$ : \[ \matrice{1 & 3 & 2 & \vline & 4 & 5 & 6 & 7}. \]On met en tas pour la position $1$ : \[\matrice{3 & 1 & 2 & \vline & 4 & 5& 6 & 7} \to \matrice{2 & 1 & \vline & 3 & 4 & 5 & 6 & 7} \to \matrice{1 & 2 & 3 & 4& 5 & 6 & 7}. \]
+ 
+\end{document}
+
+
+
+

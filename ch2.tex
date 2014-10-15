@@ -1,0 +1,132 @@
+\documentclass{mybourbaki}
+\titre{Tri fusion (\og Merge Sort \fg{})}
+\lstset{language=Python, numbers = left, frame =single}
+\begin{document}
+
+\section*{Introduction}
+\subsection*{Diviser pour régner}
+
+C'est algorithme est une illustration du principe algorithmique \og diviser pour régner\fg{}. 
+
+La résolution se fait en trois étapes :
+\begin{enumerate}
+\item division du problème en un certain nombre de sous-problèmes ;
+\item résolution des sous-problèmes récursivement ;
+\item assemblage des solutions des sous-problèmes.
+\end{enumerate}
+
+\subsection*{Dans le tri fusion}
+Si $A$ est un tableau de longueur $n$.
+\begin{enumerate}
+\item On divise $A$ en deux tableaux $A_1$ et $A_2$ de longueur divisée par deux :
+\item on trie $A_1$ et $A_2$ ;
+\item on fusionne les deux tableaux $A_1,A_2$ triés.
+\end{enumerate}
+
+\section{Fusion de deux tableaux triés}
+
+\subsection{Principe}
+
+On se donne deux tableaux triés $A,B$. L'objectif est d'obtenir $C$ tel que $\abs{C} = \abs{A} + \abs{B}$ et tel que $C$ soit la fusion triée de $A$ et $B$.
+
+\paragraph{Exemple}Si $A = (1,2,3,7,9,11)$ et $B = (2,4,5,13)$ alors $C = (1,2,2,3,4,5,7,9,11,13)$.
+
+\paragraph{Principe}Si $C$ est indicé par $k$ allant de $0$ à $n+m-1$ (avec $n = \abs{A},m=\abs{B}$), alors :
+\begin{enumerate}
+\item on maintient $i$ et $j$ positions respectives dans $A$ et $B$ et on compare $A[i]$ et $B[j]$ ;
+\item on insère le plus petit des deux dans la liste $C$ et on augmente le compteur concerné de $1$ ;
+\item cas spécial quand l'un des deux tableaux est déjà trié (auquel cas aucune comparaison n'est nécessaire, on adjoint simplement).
+\end{enumerate}
+
+\begin{lstlisting}
+function Merge(A,B)
+	n = longueur(A), m = longueur(B)
+	i = 0, j = 0
+	for k from 0 to n+m-1 do
+		if i > n-1 then
+			C[k] = B[j], j = j+1
+			continue
+		if j > m-1 then
+			C[k] = A[i], i = i+1
+			continue
+		if A[i] > B[i] then
+			C[k] = B[j], j = j+1
+		else
+			C[k] = A[i], i = i+1
+	return C					
+\end{lstlisting}
+
+\subsection{Preuve de correction}
+
+\proposition{ 
+Soit $[[k]],[[i]],[[j]]$ les valeurs respectives des variables $k,i,j$ avec $[[k]] = [[i]] + [[j]]$. À l'issue d'une itération de la boucle \textit{for}, les indices de $0$ à $[[k]] - 1$ de $C$ contiennent les éléments de :
+\begin{itemize}
+\item $A$ entre $0$ et $[[i]] - 1$,
+\item $B$ entre$ 0$ et $[[j]] - 1$,
+\end{itemize}
+et triés dans l'ordre croissant.
+}{Invariant}
+\demonstration{ 
+On procède par récurrence sur $k$ :
+\begin{itemize}
+\item Pour $[[k]]=1$ c'est clair.
+\item Si $[[k]]-1$ indices sont vérifiés, alors $[[k]]$-ième est : \[ C[k] = \min \ens{A[i],B[j]} = \min \ens{A[h] : i\leq h \leq n-1, B[k] : j\leq k \leq n-1}.\] La propriété est bien vérifiée.
+\end{itemize}
+}{}
+
+\subsection{Complexité}
+On évalue le nombre de comparaisons.
+\begin{itemize}
+\item On effectue au plus trois comparaisons par itération, si $C(n)$ est le nombre de comparaisons : \[ C(n) = \rO(n+m), \; C(n) = \Omega(n+m).\]
+\end{itemize}
+
+
+\section{Algorithme pour le tri fusion}
+\subsection{Algorithme}
+\begin{lstlisting}
+function MergeSort(A)
+	n = longueur(A)
+	if n <= 0 then return A
+	m = int((n-1)/2)
+	A1 = A[0 : m-1]
+	A2 = A[m : n-1]
+	A1 = MergeSort(A1)
+	A2 = MergeSort(A2)
+	A = Merge(A1,A2)
+	return A
+\end{lstlisting}
+
+\paragraph{Illustration}Par exemple :
+\begin{align*}
+&\matrice{7 & 3 & 4 & 8 & 2 & \vline & 15 & 5 & 6} \\
+\to & \matrice{7 & 3 & \vline & 4 & 8} \; \matrice{2 & 15 & \vline & 5 & 6} \\
+\to & \matrice{7 & 3} \; \matrice{4 & 8} \; \matrice{2 & 15} \matrice{5 & 6} \\
+\to & \matrice{7} \; \matrice{3} \; \matrice{4} \; \matrice{8} \; \matrice{2} \; \matrice{15} \; \matrice{5} \; \matrice{6} \; \; \text{(fin division)} \\
+\to & \matrice{3 & 7} \; \matrice{4 & 8} \; \matrice{2 & 15} \; \matrice{5 & 6} \\
+\to &\matrice{3 & 4 &7 & 8} \; \matrice{2 & 5 & 6 & 15} \\
+\to &\matrice{2 & 3 & 4 & 5 & 6 & 7 & 8 & 15} \; \; \text{(fin fusion)}
+\end{align*}
+
+\subsection{Complexité}
+Soit $C(n)$ le nombre de comparaisons pour l'algorithme de tri fusion. Alors \[ C(n) = C(\lfloor n/2 \rfloor) + C(\lceil n/2 \rceil) + n-1\note{Avec un algorithme plus performant pour la fusion on peut avoir un coût de $n-1$.}\]
+
+\theoreme{ 
+Si $A$ est un tableau de longueur $n$, alors le nombre de comparaisons, $C(n)$, effectuées par le tri fusion est de $\rO(n\log n)$ dans le pire des cas.
+}{}
+
+C'est un cas particulier du \og \textsc{Master} Theorem \fg{}.
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
