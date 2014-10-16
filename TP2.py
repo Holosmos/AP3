@@ -276,11 +276,11 @@ def fonc1(i,n):
 def prim(n):
 	list = [i for i in range(2,int(math.sqrt(n))+1)]
 	for k in list:
-		for i in range(2,int(math.sqrt(n))+1/k +1):
+		for i in range(2,(int(math.sqrt(n))+1)/k+1):
 			try:
 				list.remove(i*k)
 			except ValueError:
-				True	
+				False	
 	for k in list:
 		if n%k == 0:
 			return k
@@ -290,6 +290,8 @@ def prim(n):
 # 	n = prim(i)
 # 	if n == 0:
 # 		print i
+
+print prim(20)
 
 # Exercice 6
 
