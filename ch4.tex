@@ -1,0 +1,64 @@
+\documentclass{mybourbaki}
+\titre{Algorithmes de recherche de motifs (sur les mots)}
+
+\lstset{language=Python, numbers = left, frame =single}
+
+\begin{document}
+\section*{Introduction}
+\subsection*{Problématique}
+La problématique est la suivante : on a une chaine de caractère $C : 0110011000101010110\ldots$ et un motif $M = 010$. On recherche les occurrences de $M$ dans la chaine $C$ :
+\[ C = 011001100\boldsymbol{010}\boldsymbol{10}\boldsymbol{10}110\ldots \]
+
+\subsection*{Notations}
+On appellera $\Sigma$ dans la suite un alphabet fini (ensemble fini de caractères).
+
+On appellera $\Sigma^{k}$ l'ensemble des mots de longueur $k$ sur $\Sigma$.
+
+On appellera $\Sigma^{*}$ : \[ \Sigma^{*} = \Union_{k \geq 0}^{}\Sigma^{k}.\]
+
+Soit $w\in \Sigma^{*}$, on appellera \textit{len$(w)$} la longueur de $w$. Soit $i\leq$ len$(w)$, alors $w[i]$ sera le $i$-ième caractère de $w$. $w[i:j] = w[i]w[i+1]\ldots w[j-1]$.
+
+\section{Algorithme naïf}
+\subsection{Présentation}
+On se donne une chaîne $C$ et un motif $M$.
+
+On teste l'égalité de $M$ avec chaque sous-mot $C[i:i+{\rm len}(M)]$.
+
+\definition{
+ Lorsque $M = C[i : i+{\rm len}(M)]$ on dit que $M$ apparaît avec décalage $i$ dans la chaîne $C$.
+}{}
+
+\begin{lstlisting}
+function rechercheMotifNaif(C,M)
+	n = len(C)
+	m = len(M)
+	S = []
+	for i from 0 to n - m do
+		if M[0:m] = C[i:i + m] then
+			S = S + [i]
+	return S		
+\end{lstlisting}
+
+\subsection{Coût de l'algorithme naïf}
+On cherche à compter le nombre de comparaisons de caractères, $C(n)$.
+
+Chaque test $M = C[i:i+m]$ a un coût au plus de $m$ comparaisons. De plus, il y a $n-m+1$ tests d'égalité donc : \[ C(n) = \rO(m(n-m+1)).\]
+De plus la borne est atteinte pour : $M = a^{m}$ avec $a\in \Sigma$ et $C = a^{n}$ avec $n\geq m$.
+
+\section{Algorithme de \textsc{Karp}-\textsc{Rabin}}
+R. \textsc{Karp}, M. \textsc{Rabin} : $1987$.
+
+C'est un algorithme qui se base sur le naïf mais enrichi par une technique de \textit{hachage}.
+
+Dans la suite, $\Sigma = \ens{0,1,\ldots,9}$. On peut donc  représenter des mots par des entiers. Le mot $M \in \Sigma^{*}$ peut être représenté par l'entier : \[ m = \sum_{k=0}^{{\rm len}(M)}M[k]10^{{\rm len}(M) - k}.\]
+
+\paragraph{Coût}Le coût de la représentation est un $\rO(m)$\note{Voir : \href{https://fr.wikipedia.org/wiki/Méthode_de_Ruffini-Horner}{schéma de \textsc{Horner}}.}.
+\paragraph{Exemple}
+Par exemple, si $C =$ '23451' et len$(M)=4$. On a $C[0:4] = C[0]C[1]C[2]C[3] =$ '2345' et sa représentation est $c_0 = 2345$. On veut obtenir l'entier $c_1$ représentant $C[1:5]$ à partir de $c_0$ et $C[4]$ : $c_1 = 10(c_0 - 10^{3}\times 2) +1 = 10(c_0 - 10^{3}C[0]) + C[4]$.
+
+Ainsi, on peut calculer $10^{m-1}$ en $\rO(\log m)$ opérations (mais $\rO(m)$ suffit). On obtient $c_{i+1}$ à partir de $c_i$ par : \[c_{i+1} = d\times(c_0 - d^{m-1}\times C[i]) + C[i+m], \]où $d=\abs{\Sigma}$.
+Donc on obtient $c_{i+1}$ à partir de $c_i$ en un nombre constant d'opérations.
+
+\paragraph{Conclusion}L'ensemble des $c_0,c_1,\ldots,c_{n-m+1}$ peut être obtenu en $\rO(m+n-m+1) = \rO(n)$.
+
+\end{document}

@@ -248,6 +248,7 @@ On va compter le nombre de comparaisons, $C(n)$.
 \begin{itemize}
 \item $C(0) = 0$ ;
 \item $C(1) =1$ (car on vérifie si c'est $x$ ou non) ;
+\item $C(2) = 2$ ;
 \item si $u>l$, $m-l \leq u - m \leq m-l+1$ et alors $1+\max(m-l,u-m) \leq \frac{u-l+1}{2}$ et donc $C(n) \leq 1 + C(\lfloor \frac{n}{2}\rfloor)$.
 \end{itemize}
 
@@ -256,12 +257,51 @@ La recherche dichotomique nécessite au plus \[ C(n) \leq \lfloor \log_2(n) + 1 
 }{}
 \paragraph{Preuve en exercice}Par récurrence sur $k = \lfloor \log_2 n \rfloor$. Indication : \[ C(n) \leq 1 + C(\lfloor n/2 \rfloor) \leq 1 + (\lfloor \log_2 n/2 \rfloor + 1) \leq 1 + \lfloor \log_2 n \rfloor.\]
 
+\demonstration{ 
+Par récurrence sur $k = \lfloor \log_2 n\rfloor$ : 
+\begin{itemize}
+\item si $k =0$ alors $n=1$ or on sait que $C(1) = 1$ donc c'est vérifié ;
+\item si $k=1$ alors $n=2$ et on a bien $C(2) = 2$ ;
+\item supposons $k\geq 2$ et la propriété vraie pour tout $n$ tel que $k \geq \lfloor \log_2 n \rfloor$ ;
+\item soit $n$ tel que $k < \lfloor \log_2 n \rfloor \leq k+1$,
+\begin{align*}
+ C(n) &\leq 1 + C(\lfloor n/2 \rfloor) \\
+ C(n) &\leq 1 + \lfloor\log_2\lfloor n/2 \rfloor + 1\rfloor \\\
+ C(n) &\leq 1 + \lfloor\log_2\lfloor n/2\rfloor + \log_2 \lfloor n/2 \rfloor\rfloor\\
+ C(n) &\leq \lfloor 1 + \log_2(2\fois \lfloor n/2\rfloor) \rfloor \\
+ C(n) &\leq \lfloor 1 + \log_2(n)\rfloor
+\end{align*}
+\end{itemize} 
+}{}
+
+
 \subsection{Preuve de correction}
-Il faut :
+Il faut vérifier que :
 \begin{enumerate}
-\item vérifier que l'algorithme termine toujours (i.e. la taille des tableaux diminue strictement) ;
-\item vérifier qu'il renvoie bien la bonne position si, et seulement si, $x$ est dans le tableau.
+\item l'algorithme termine toujours (i.e. la taille des tableaux diminue strictement) ;
+\item l'algorithme renvoie bien la bonne position si, et seulement si, $x$ est dans le tableau.
 \end{enumerate}
+\demonstration{ 
+Soit $T$ un tableau, $l$ la borne inférieure et $u$ la borne supérieure. On fait une preuve par récurrence sur $u-l$.
+\begin{itemize}
+\item Si $u < l$ alors l'algorithme est correct, puisqu'il renvoie \textit{none}.
+\item Sinon, $l\leq m \leq u$ avec $m=u$ si, et seulement si, $l\leq u+1$, c'est-à-dire $l=u$ ou $l=u+1$. Donc $u-l > (m-1)-l$ et $u-l > u-(m+1)$ ce qui donne les tailles d'intervalles des appels récursifs. Ainsi les appels récursifs sont effectués sur des intervalles strictement plus petits, donc l'algorithme s'arrête.
+\end{itemize}
+}{}
+\demonstration{
+On le fait aussi par récurrence sur la taille du tableau trié $T$, $n = u-l+1$, sur lequel porte la recherche dichotomique.
+\begin{itemize}
+\item Si $u-l+1 \leq 0$ alors l'algorithme renvoie \textit{none} et c'est la bonne valeur.
+\item Si $u-l+1 = 1$, c'est-à-dire $u=l$ alors l'algorithme renvoie $m$ si $T[m] = x$ et \textit{none} dans le cas contraire ce qui est dans les deux cas la bonne réponse.
+\item Hypothèse de récurrence : on suppose que l'algorithme renvoie la bonne réponse pour $n=u-l+1 \geq 1$. On doit montrer la propriété pour $n+1$.
+\begin{itemize}
+\item Puisque $n+1 > 1$ on a $l\leq m < u$.
+\item  Si la condition est vérifiée, l'algorithme renvoie bien $n$.
+\item Sinon un appel récursif est effectué avec un sous-tableau de $T$ de taille strictement inférieure à $n+1$ et par hypothèse de récurrence on conclut.
+\end{itemize}
+\end{itemize}
+}{}
+
 
 \end{document}
 
