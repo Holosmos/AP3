@@ -95,51 +95,47 @@ def triInsertion(L):
 # print triInsertion(L)
 
 def triInsertDich(L):
-	if len(L) > 0:
-		if L[0] > L[1]:
-			L[0],L[1] = L[1],L[0]		
+	if len(L) > 1:
+		if L[1] < L[0]:
+			L[0],L[1] = L[1],L[0]
 	i = 2		
 	while i < len(L):
-		test = False
-		j = rechDich(L,i,i)
-		if j != i:
-			test = True
-		i = i+1		
-		if test:
-			if j == 0:
-				L1 = [L[i]]
-			else :				
-				L1 = [L[k] for k in range(j)]
-				L1.append(L[i])
-				
+		j = rechDich(L,i,i-1)
+		if j != i:			
+			L1 = [L[k] for k in range(j)]
+			L1.append(L[i])
 			L2 = [L[k] for k in range(j,i)]
 			L3 = [L[k] for k in range(i+1,len(L))]
-			L = L1
+			L = []
+			if len(L1) > 0:
+				L = L1
 			if len(L2) > 0:
 				L = L + L2
 			if len(L3) > 0:
 				L = L + L3	
-			i = i-1	
+		i+=1		
 	return L		
 				
 def max(a,b):
 	if a > b:
 		return a
-	return b					
-def rechDich(L,i, k, d = 0):
-	print str([L[m] for m in range(d,k+1)]) + str(L[i])
-	if k-d <= 1:
-		if L[k] <= L[i]:
-			return k
-		if L[d] >= L[i]:
-			return d
-		return d+1		
-		
-	if L[(d+k)/2] >= L[i]:
-		return rechDich(L,i,(d+k)/2,d)
-	return rechDich(L,i,k,(d+k)/2+1)		
+	return b	
+					
+def rechDich(L,i, maxi, mini = 0):
 	
-print triInsertDich([39, 2, 31, 31, 37, 17, 33, 11, 10, 39])
+	if maxi-mini <= 1:
+		maxV = L[maxi]
+		minV = L[mini]
+		if minV >= L[i]:
+			return mini
+		if maxV < L[i]:
+			return maxi+1	
+		return maxi
+		
+	if L[(mini+maxi)/2] >= L[i]:
+		return rechDich(L,i,(mini+maxi)/2,mini)
+	return rechDich(L,i,maxi,(mini+maxi)/2)		
+	
+print triInsertDich(L)
 
-#print rechDich([2, 10, 11, 17, 31, 31, 33, 37, 39, 39],9,9)
 
