@@ -46,6 +46,7 @@ Chaque test $M = C[i:i+m]$ a un coût au plus de $m$ comparaisons. De plus, il y
 De plus la borne est atteinte pour : $M = a^{m}$ avec $a\in \Sigma$ et $C = a^{n}$ avec $n\geq m$.
 
 \section{Algorithme de \textsc{Karp}-\textsc{Rabin}}
+\subsection{L'algorithme}
 R. \textsc{Karp}, M. \textsc{Rabin} : $1987$.
 
 C'est un algorithme qui se base sur le naïf mais enrichi par une technique de \textit{hachage}.
@@ -61,4 +62,54 @@ Donc on obtient $c_{i+1}$ à partir de $c_i$ en un nombre constant d'opérations
 
 \paragraph{Conclusion}L'ensemble des $c_0,c_1,\ldots,c_{n-m+1}$ peut être obtenu en $\rO(m+n-m+1) = \rO(n)$.
 
+\subsection{Représentation \og hachée \fg{}}
+
+Soit $q\in \N$ assez grand. Il s'agit de calculer $$M,C_0,C_1,\ldots \mod q.$$
+On pose 
+\begin{align*}
+\tilde{M} &= M \mod q \\
+\tilde{C_0} &= C_0 \mod q\\
+\tilde{C}_{i+1} &= d\footnotemark(\tilde{C_i}-d^{l-1}C[i])+C[i+l] \mod q.
+\end{align*}
+\footnotetext{Ici $d=10$ car on est en base décimale.}
+\paragraph{Remarque}Il faut $\Theta(l_m)$ pour construire $\tilde{M},\tilde{C}_0$. Finalement, il faut $\rO(l_c-l_m +1)$ pour construire l'ensemble des $\tilde{c}_2,\tilde{c}_2,\ldots$.
+
+\proposition{ 
+Si $\tilde{C}_i\neq \tilde{M}$ alors $C_i\neq M$.
+}{}
+
+On peut utiliser cette propriété comme filtre pour ne pas effectuer tous les tests.
+
+\begin{lstlisting}
+function KarpRabin(C, M, d, q)
+	lc = len(C)
+	lm = len(M)
+	h = d**(lm-1) % q
+	m, c = 0, 0
+	S = []
+	for i from 0 to lm - 1 do
+		m = (d*m + M[i]) % q
+		c = (d*c + C[i]) % q
+	for i from 0 to lc - lm do
+		if m = c then
+			if M[0:lm] = C[i:i+lm] then
+				S = S + [i,]
+		if i < lc - lm then
+			c = (d*(c-C[i]*h) + C[i+lm]) % q
+	return S					
+\end{lstlisting}
+
+\subsection{\'Etude de l'efficacité}
+Supposons que $x$ est le nombre d'apparitions de $M$ dans $C$. Pour toutes les occurrences de $M$ dans $C$ on doit faire $x*l_m$ comparaisons.
+
+De plus, le nombre de faux-positifs est borné par $\rO(l_c/q)$.
+
+Ainsi, le nombre d'opérations est $\rO(l_c) + \rO(l_m(x+l_m/q))$. Si on prend $q\geq l_m$ alors le nombre d'opérations est en $\rO(l_c)$.
+
 \end{document}
+
+
+
+
+
+
