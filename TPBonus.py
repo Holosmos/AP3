@@ -44,7 +44,7 @@ def mult(A,B):
 	return ret		
 	
 	
-print mult([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],[[2,3,4,5],[6,7,8,9],[2,3,4,5],[6,7,8,9]])	
+#print mult([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],[[2,3,4,5],[6,7,8,9],[2,3,4,5],[6,7,8,9]])	
 
 def multStrassen(A,B):
 
@@ -66,7 +66,9 @@ def multStrassen(A,B):
 	bloc2 = add(P1,P2)
 	bloc3 = add(P3,P4)
 	bloc4 = add(sou(P5,P7),sou(P1,P3))
+	bigbloc = [bloc1,bloc2,bloc3,bloc4];
+	ret = [[bloc[k][i][j]  for k in range(4) for j in range(len(bloc1))]for i in range(len(bloc1))] 
 	
-	return [[bloc1[0][0],bloc2[0][0]],[bloc3[0][0],bloc4[0][0]]]	
+	return ret	
 	
-#print multStrassen([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],[[2,3,4,5],[6,7,8,9],[2,3,4,5],[6,7,8,9]])	
+print multStrassen([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],[[2,3,4,5],[6,7,8,9],[2,3,4,5],[6,7,8,9]])	
