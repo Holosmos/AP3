@@ -129,7 +129,7 @@ Si ce n'est pas le cas, le dernier élément de $w$ est différent, soit de $u[i
 function tabDynLCS(u,v)
 	n, m = len(u), len(v)
 	for i from 0 to n do A[i,0] = 0
-	fpr j from 0 to m do A[0,j] = 0
+	for j from 0 to m do A[0,j] = 0
 	for i from 1 to n do
 		for j from 1 to m do
 			if A[i-1,j] > A[i,j-1] then
@@ -147,7 +147,7 @@ function LCS(L,u,v)
 	while min(i,j)) > 0 do
 		if L[i,j] = nord-ouest then
 			k = k +1
-			z[k] = u[o]
+			z[k] = u[i-1]
 			i = i - 1
 			j = j -1 
 			else if L[i,j] = ouest then j = j - 1

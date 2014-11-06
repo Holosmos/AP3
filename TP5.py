@@ -86,9 +86,30 @@ def TabDyn(u,v):
 	return A,L		
 
 A,L = TabDyn('abcaa','abcabc')
-print [[L[i][j] for j in range(1,len(L[i]))]for i in range(1,len(L))]
+#print [[L[i][j] for j in range(1,len(L[i]))]for i in range(1,len(L))]
 
+def min(a,b):
+	if a < b :
+		return a
+	return b	
 
+def LCS(u,v):
+	A,L = TabDyn(u,v)
+	k,i,j = 0,len(u),len(v)
+	z = []
+	while min(i,j) >= 0:
+		if L[i][j] == 'no':
+			k += 1
+			z.append(u[i-1])
+			i -= 1
+			j -= 1
+		elif L[i][j] == 'o':
+			j -= 1
+		else:
+			i -= 1		
+	return [z[i] for i in range(len(z)-1,-1,-1)]
+
+print LCS('abcaabcabc','abcabc')		
 
 
 
