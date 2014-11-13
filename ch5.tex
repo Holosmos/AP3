@@ -1,7 +1,7 @@
 \documentclass{mybourbaki}
 \titre{Programmation dynamique}
 
-\lstset{language=Python, numbers = left, frame =single}
+\lstset{language=Python, numbers = left}
 
 \begin{document}
 
@@ -86,15 +86,17 @@ function tabRec(i,j)
 	return F(tabRec(i-1,j),tabRec(i,j-1),tabRec(i-1,j-1))		
 \end{lstlisting}
 
-\section{LCS (Least Common Subsequence) : problème de la plus longue sous-suite commune}
+\section{LCS (Least Common Subsequence) : problème d'une plus longue sous-suite commune}
 
 \paragraph{Exemple}Supposons que l'on dispose de deux brins d'ADN : 
 \begin{center}
-u = t t a t a t g c g t
+$u$ = t t a t a t g c g t
 
-v = t a t c c c c t t a,
+$v$ = t a t c c c c t t a,
 \end{center}
 le mot \og t a t t t \fg{} apparait dans les deux brins et est le plus grand.
+
+\subsection{Propriétés}
 
 Soit $\Sigma$ un alphabet fini. 
 Soient $u,v\in \Sigma^{*}$. Une sous-suite commune à $u$ et $v$ est un mot $w\in \Sigma^{*}$ tek que : \[ \exists 1\leq i_0 < i_1< \ldots < i_{\abs{w}}, \exists 1 \leq j_0 < j_1 < \ldots < j_{\abs{w}}, \forall k \leq \abs{w}, \; w_{k} = u_{i_k}=v_{j_k}.\]
@@ -125,6 +127,8 @@ Si ce n'est pas le cas, le dernier élément de $w$ est différent, soit de $u[i
 \end{itemize}
 }{}
 
+\subsection{Algorithme}
+
 \begin{lstlisting}
 function tabDynLCS(u,v)
 	n, m = len(u), len(v)
@@ -147,12 +151,81 @@ function LCS(L,u,v)
 	while min(i,j)) > 0 do
 		if L[i,j] = nord-ouest then
 			k = k +1
-			z[k] = u[i-1]
+			z[k] = u[i]
 			i = i - 1
-			j = j -1 
-			else if L[i,j] = ouest then j = j - 1
-			else i = i -1
+			j = j - 1 
+		else if L[i,j] = ouest then j = j - 1
+		else i = i - 1
 	return reverse(z)					
+\end{lstlisting}
+
+\subsection{Coût}
+
+Le coût de l'algorithme sera le coût des fonctions tabDynLCS et LCS.
+\begin{itemize}
+\item tabDynLCS demande $\rO(n\times m)$.
+\item LCS demande $n+m$ itérations, c'est-à-dire $\rO(n+m)$.
+\end{itemize}
+Finalement on peut dire que c'est algorithme est en $\rO(n\times m)$ avec $n$ la longueur de la suite $u$ et $m$ celle de $v$.
+
+\section{Problème du sac à dos}
+
+\subsection{Présentation du problème}
+
+Soient des objets numérotés de $1$ à $n$ tel que pour tout $i\leq n$, $w_i$ est le poids de l'objet et $p_i$ sa valeur. La capacité du sac est notée $W$. Le problème étant de maximiser la somme des valeurs des objets mis dans le sac sous la contrainte du poids.
+
+Notons $(x_1,\ldots,x_n)$ une suite de $1$ et $0$ tel que $x_i = 1$ si l'objet $i$ est dans le sac et vaut $0$ sinon. Il s'agit de résoudre le problème \[\systeme{ &\max_{x_i}\sum_{i=1}^{n}x_i p_i \\  &\sum_{i=1}^{n}x_iw_i \leq W }. \]
+
+\subsection{Propriétés}
+
+On définit un tableau $KP[i,c]$, un tableau à deux dimensions avec $0\leq i \leq n$ et $0\leq c\leq W$. $KP[i,c]$ est la valeur optimale d'un sac à dos ne contenant que des objets d'indices inférieurs à $i$ et dont le poids total ne peut dépasser $c$. Plus formellement : \[ KP[i,c] = \max\enstq{\sum_{j\in \cL}p_j}{\cL\dans\ens{1,\ldots,i}\et\sum_{j\in\cL}w_j \leq c}.\] De plus : \[KP[0,c] = KP[i,0] = 0. \]
+
+\proposition{ 
+Si $c\geq w_{i+1}$ alors : 
+\[ KP[i+1,c] = \max \systeme{  
+&KP[i,c] \\
+&p_{i+1}+KP[i,c-w_{i+1}]
+}.\]
+}{}
+\demonstration{ 
+Si $\cL \dans \ens{1,\ldots,i}\dans\ens{1,\ldots,i,i+1}$ et donc $KP[i,c] \leq KP[i+1,c]$.
+
+Si $\cL \dans\ens{1,\ldots,i+1}$ et $i+1\in\cL$ alors \[\sum_{j\in \cL} p_j = p_{i+1} + \sum_{j\in \cL \prive{i+1}}^{}p_j. \]
+On  a \[ KP[i+1,c] \geq p_{i+1} + KP[i,c].\]Et donc \[ KP[i+1,c] \geq \max\ens{KP[i,c],p_{i+1}+KP[i,c-w_{i+1}]}.\]
+
+Supposons qu'il existe une solution $\cL$ au problème $(i+1,c)$.
+\begin{itemize}
+\item Si $i+1\in \cL$ alors $KP[i+1,c] = p_{i+1} + \sum_{j\in \cL\prive{i+1}}^{}p_j$. Or \[ \sum_{j\in\cL}w_{j} \leq c \ssi \sum_{j\in\cL\prive{i+1}}w_j\leq c-w_{i+1}. \]
+
+$\cL\prive{i+1}$ est nécessairement optimale pour $(i,c-w_{i+1})$. Dans le cas contraire $\cL'\union\ens{i+1}$ nierait l'optimalité de $\cL$. En conclusion, on a \[ KP[i+1,c] = p_{i+1}+KP[i,c-w_{i+1}].\]
+\item Si $i+1\not\in\cL$ alors $\cL\dans\ens{1,\ldots,i}$ et donc \[ KP[i+1,c] = KP[i,c].\]
+\end{itemize}
+
+On a bien \[ KP[i+1,c] = KP[i,c]\bigwedge_{i+1\not\in \cL} + \left(p_{i+1}+KP[i,c-w_{i+1}]\right)\bigwedge_{i+1\in \cL} = \max\ens{KP[i,c],p_{i+1}+KP[i,c-w_{i+1}]} .\]
+}{}
+
+\subsection{L'algorithme}
+
+\begin{lstlisting}
+function knapSack(w,n,p,W)
+	for i from 0 to n do
+		kp[i,0] = 0
+	for c from 0 to W do
+		kp[0,c] = 0
+	for i from 1 to n do
+		for c from 1 to W do
+			if c > w[i] then
+				kp[i,c] = max(kp[i-1,c],p[i] + kp[i-1,c-w[i]])
+			else
+				kp[i,c] = kp[i-1,c]
+	for i from 1 to n do
+		x[i] = 0
+	c = W
+	for i from n to 1 do
+		if kp[i,c] != kp[i-1,c] then
+			x[i] = 1
+			c = c-w[i]				
+	return x,kp						
 \end{lstlisting}
 
 \end{document}

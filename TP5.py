@@ -35,9 +35,7 @@ def rechercheMotif2DNaif(C,M):
 
 C = [[1,2,3],[4,5,6],[7,4,9]]
 M = [[4,'*']]
-#print rechercheMotif2DNaif(C,M)
-
-
+print rechercheMotif2DNaif(C,M)
 
 def Horner(w):
 	T = [int(w[i]) for i in range(len(w)-1,-1,-1)]
@@ -109,11 +107,30 @@ def LCS(u,v):
 			i -= 1		
 	return [z[i] for i in range(len(z)-1,-1,-1)]
 
-print LCS('abcaabcabc','abcabc')		
+#print LCS('atgcg','agcccc  ')		
 
+def max(a,b):
+	return a if a > b else b
 
+def RuckSack(poids,val,W):
+	n = len(poids)
+	kp = [[0 for j in range(W+1)] for i in range(n+1)]
+	for i in range(1,n+1,1):
+		for c in range(1,W+1,1):
+			if c >= poids[i-1]:
+				kp[i][c] = max(kp[i-1][c],val[i-1]+kp[i-1][c-poids[i-1]])
+			else:
+				kp[i][c] = kp[i-1][c]
+	x = [0 for i in range(n)]
+	c = W
+	for i in range(n,0,-1):
+		if kp[i][c] != kp[i-1][c]:
+			x[i-1] = 1
+			c = c-poids[i-1]
+	return x, kp		
 
-
+#print RuckSack((1,2,3),(1,3,5),3)	
+					
 
 
 							
