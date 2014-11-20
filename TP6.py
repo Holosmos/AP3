@@ -63,7 +63,11 @@ class Vecteur(object):
 				assert type(a) is float or type(a) is int
 				self.__val.append(a)
 		except:
-			True
+			assert len(valeur)==1
+			a = valeur[0]
+			assert isinstance(a,Vecteur)
+			for i in range(a.len()):
+				self.__val.append(a.__val[i])
 	
 	def __str__(self):
 		return "%s" %str(self.__val)		
@@ -143,6 +147,108 @@ class Vecteur(object):
 # print a == a
 		
 		
+class Matrice(object):
+	
+	def __init__(self, *list):
+		self.__val = []
+		try :
+			assert len(list) != 0
+			self.li = len(list)
+			assert isinstance(list[0],Vecteur)
+			self.col = list[0].len()
+			self.__val.append(list[0])
+			for i in range(1,len(list)):
+				assert isinstance(list[i],Vecteur)
+				self.__val.append(list[i])	
+		except:
+			True		
+	def __getitem__(self, i):
+		try:
+			assert type(i) is tuple
+			assert len(i) == 2
+			assert type(i[0]) is int
+			assert type(i[1]) is int
+			a = self.__val[i[0]]
+			
+			return a[i[1]]
+		except:
+			try:
+				assert i >= 0 and i < self.li
+				return self.__val[i]
+			except:
+				True
+	
+	def __setitem__(self, i , a):	
+		try :	
+ 			assert type(i) is tuple
+ 			assert len(i) == 2
+ 			assert type(i[0]) is int
+ 			assert type(i[1]) is int
+			v = self.__val[i[0]]
+			v[i[1]] = float(a)
+			self.__val[i[0]] = v
+		except:	
+			 try:
+	 			assert type(i) is int
+	 			assert i >= 0 and i < self.li
+	 			assert isinstance(a,Vecteur)
+	 			self.__val[i] = a
+			 except:
+				True
+	
+	def __str__(self):
+		st = ""
+		for i in range(self.li):
+			for j in range(self.col):
+				st += str(self[i,j]) + "\t"
+			st += "\n"				
+		return st
+	
+	@staticmethod
+	def zeros(*args):
+		try:
+			assert len(args) >= 2
+			n = int(args[0])
+			m = int(args[1])
+			v = Vecteur.zeros(m)
+			return Matrice(*[Vecteur(v) for i in range(n)])
+		except:
+			try:
+				assert len(args) == 1
+				n = int(args[0])
+				v = Vecteur.zeros(n)		
+				return Matrice(*[Vecteur(v) for i in range(n)])
+			except:
+				True
+	@staticmethod
+	def identite(i):
+		n = int(i)
+		m = Matrice.zeros(n)
+		for j in range(n):
+			m[j,j] = 1
+		return m			
+		
+	def __mul__(self, other):
+		try:
+			assert isinstance(other,Matrice)
+			assert other.li == self.col
+			
+			res = Matrice.zeros(self.li,other.col)
+			for i in range(self.li):
+				for j in range(other.col):
+					for k in range(self.col):
+						res[i,j] += self[i,k]*other[k,j]
+			return res
+		except:
+			True		
+			
+			
+a = Vecteur(1,2,5)
+b = Vecteur(3,4,6)
+c = Matrice(a,b,Vecteur(a))
+print c
+e = Matrice.identite(3)
+print c*e
 		
 		
 		
@@ -150,6 +256,8 @@ class Vecteur(object):
 		
 		
 		
-		
-		
+				
+				
+				
+				
 					
