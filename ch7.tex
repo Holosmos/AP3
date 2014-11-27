@@ -71,6 +71,82 @@ La variance de $Y$ est \[ \text{Var}(Y) = \sum_{k\geq 0}p_ky_k^{2} = \mathbf{E}[
 Soit $(Y_i)$ une suite de variables aléatoires indépendantes et de même loi. Alors \[m_n = \frac{1}{N}\sum_{i=1}^{N}Y_i \overset{N\to\infty}{\longrightarrow} \mathbf{E}[Y]. \]
 }{Loi des grands nombres}
 
+
+\subsection{Exemple d'algorithme de \textsc{Monte-Carlo}}
+C'est un algorithme qui termine mais éventuellement en donnant une réponse inexacte (c'est une proportion de cas à minimiser).
+
+\paragraph{Problème}Il s'agit pour un entier $n$ donné, de savoir si $n$ est premier et s'il ne l'est pas, une décomposition de $n$. Nous allons étudier le teste de primalité de \textsc{Miller-Rabin}.
+
+\theoreme{ 
+Soit $p$ un entier non nul. Si $p$ est premier alors pour $a\in \ens{1,\ldots,p-1}$ \[a^{p-1} = 1\mod p. \]
+}{Petit théorème de \textsc{Fermat}}
+\demonstration{ 
+Soit $a$ non nul, $\Z/p\Z$ est un corps à $p$ éléments. Si $a^{p-1}\neq 1$ alors on a aussi $a^{p-1}\neq 0$ et on a pour tout $n\leq p-1$ : $a^{p-1}\neq 1$. Ainsi, il y a $p-1$ nombres entre $2$ et $p-1$, absurde.
+}{}
+
+\proposition{ 
+Soit $n\in \N^{*}$. Supposons que $n = 2^{k}m +1$ où $m$ est impair. Si l'une des conditions suivantes est vraie :
+\begin{itemize}
+\item $a^{n-1}\neq 1 \mod n$ ;
+\item $a^{n-1} = 1\mod n$ et $a^{m}\neq 1 \mod n$ et pour tout $i\leq k$, $$a^{2^{i}m}\neq -1\mod n.$$
+\end{itemize}
+Alors $n$ est composé.
+}{}
+\demonstration{ 
+Soit $n$ telle que la seconde condition soit vérifiée. Soit $i\leq k$ le plus grand entier tel que $$a^{2^{i}m}\neq 1 \mod n.$$On pose $b = a^{2^{i}m}$, $b\neq \pm 1 \mod n$. Ainsi, $n$ ne divise ni $b-1$ ni $b+1$. Or \[ b^{2} = a^{2^{i+1}m} = 1 \mod n\]et donc \[ b^{2}-1 = (b-1)(b+1) = 0\mod n.\] Or $n$ ne peut diviser $b-1$ ou $b+1$ et donc $n$ ne peut être premier. Donc $n$ est composé.
+}{}
+
+\paragraph{Remarque}Les nombres vérifiant la proposition précédente sont appelés \og nombre de \textsc{Carmichael} \fg{}.
+
+\begin{lstlisting}
+function Temoin(a,b,d,s)
+	x = a**d % n
+	if x = 1 then return false
+	for r from 1 to s-1 do
+		x = a**(2**r) % n
+		if x = n-1 then
+			return false
+	return true
+	
+function MillerRabin(n,k=10)
+	n - 1 = (2**s)*d		
+	for i from 1 to k do
+		a = rand(2,n-2)
+		if Temoin(a,n,d,s) then
+			return false
+	return true		
+\end{lstlisting} 
+
+Considérons le sous-groupe : \[ B_i = \enstq{a}{a\leq n-1, \pgcd(a,n) =1 \et a^{2^{i}m}= \pm 1 \mod n} \]où \[ i = \max \enstq{i\leq k}{\exists a \in \ens{1,\ldots,n-1}, \pgcd(a,n) = 1 \et a^{2^{i}m}\neq -1\mod n}.\]$B_i$ est sous-groupe strict du groupe $\enstq{a}{a\leq n-1,\pgcd(a,n) = 1}$. Par le théorème de \textsc{Lagrange}, $\abs{B_i}$ divise le groupe principal et donc $\abs{B_i}\leq 1/2$.
+
+Ainsi, en répétant $k$ fois l'algorithme, la probabilité de se tromper est de $1/2^{k}$.
+
+\paragraph{L'algorithme}L'entrée est $n\in \N^{*}$. On pose $$n-1 = 2^{k}\fois m$$avec $m$ impair.
+
+On choisit aléatoirement $a\in\ens{1,\ldots,n-1}$. Si $\pgcd(a,n)\neq 1$ alors on renvoie \og composé\fg{}.
+
+Si $a^{m} =1 \mod n$ alors on renvoie \og premier \fg{}.
+
+Pour $i = 1,\ldots, k-1$ alors si $$a^{2^{i}m} =-1\mod n$$ alors on renvoie \og premier \fg{}.
+
+Sinon, on renvoie \og composé \fg{}.
+
+\section{Algorithme de Las Vegas}
+Un tel algorithme est probabiliste, il donne toujours la bonne réponse quand il se termine mais peut ne jamais se terminer.
+
+\paragraph{Exemple : élection d'un chef}On a $n$ candidats et l'objectif est d'élire un chef parmi ces candidats. C'est un algorithme en plusieurs tours :
+\begin{enumerate}
+\item Chaque candidat choisit un nombre (de manière aléatoire) entre $1$ et le nombre de candidats.
+\item Soit $t$ le nombre de $1$ tirés par l'ensemble des votants. 
+\begin{itemize}
+\item Si $t =1$ alors on recommence.
+\item Si $t>1$, seuls les candidats qui ont tirés un $1$ restent en jeu.
+\item Si $t=1$, le candidat qui a tiré un $1$ est élu.
+\end{itemize}
+\end{enumerate}
+
+On peut montrer que l'espérance du nombre de tours nécessaires est constante.
+
 \end{document}
 
 

@@ -240,16 +240,68 @@ class Matrice(object):
 						res[i,j] += self[i,k]*other[k,j]
 			return res
 		except:
+			try:
+				a = float(other)
+				return Matrice(*[a*self[i] for i in range(self.li)]) 
+			except:	
+				True		
+	def __rmul__(self,other):
+		a = float(other)
+		return self*a	
+		
+	def __add__(self,other):
+		try:
+			assert isinstance(other,Matrice)
+			assert other.li == self.li
+			assert other.col == self.col
+			return Matrice(*[self[i]+other[i] for i in range(self.li)])
+		except:
+			True	
+	def __radd__(self,other):
+		return self+other	
+	
+	def __sub__(self,other):
+		try:
+			assert isinstance(other,Matrice)
+			assert other.li == self.li
+			assert other.col == self.col
+			return Matrice(*[self[i]-other[i] for i in range(self.li)])	
+		except:
 			True		
 			
+	def __cmp__(self,other):
+		try:
+			assert isinstance(other,Matrice)
+			assert other.li == self.li
+			assert other.col == self.col
+			for i in range(self.li):
+				for j in range(self.col):
+					assert self[i,j] == other[i,j]
+			return 0
+		except:
+			return 1		
 			
 a = Vecteur(1,2,5)
 b = Vecteur(3,4,6)
 c = Matrice(a,b,Vecteur(a))
-print c
+
 e = Matrice.identite(3)
-print c*e
-		
+
+d = Matrice(a,b)
+
+
+print 2*d
+print d+d
+print d-d
+print d-2*d
+
+print d==d
+print d!=d
+print d==a
+print a==b
+print a==a
+
+
 		
 		
 		
