@@ -22,22 +22,21 @@ def decomp(n):
 # print decomp(20)	
 
 def temoin(n,s,d,a):
-	if (a**d)%n==1: return True
-	dR = 1
-	for r in range(s+1):
-		k = a**(dR*d)
-		if k%n == n-1: return True
+	if (a**d)%n==1: return False
+	dR = d
+	for r in range(s):
+		k = a**dR
+		if k%n == n-1: return False
 		dR *= 2
-	return False
+	return True
 	
 def MillerRabin(n,k=10):
 	s,d = decomp(n-1)
 	for i in range(k):
 		a = random.randint(1,n-1)
-		if a%n == 0: return False
-		if not temoin(n,s,d,a): return False
+		if temoin(n,s,d,a): return False
 	return True
 	
 print MillerRabin(21)
 print MillerRabin(23)		
-print MillerRabin(20)			
+print MillerRabin(1234567891)	
