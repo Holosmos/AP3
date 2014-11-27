@@ -37,6 +37,6 @@ def MillerRabin(n,k=10):
 		if temoin(n,s,d,a): return False
 	return True
 	
-print MillerRabin(21)
-print MillerRabin(23)		
-print MillerRabin(1234567891)	
+#print MillerRabin(21)
+#print MillerRabin(23)		
+print MillerRabin(113,1)	
