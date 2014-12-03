@@ -1,0 +1,318 @@
+\documentclass{mybourbaki}
+
+\titre{Systèmes de vote}
+\lstset{language=Python, numbers = left, frame =single}
+
+\usepackage[all]{xy}
+
+\begin{document}
+
+\section{Raffinement de la méthode de \textsc{Condorcet}}
+\subsection{Paradoxe de \textsc{Concorcet}}
+
+Soient $A_1,\ldots,A_n$, $n$ candidats. Si pour tout $1\leq i\leq n$ : $A_i\prec A_{i+1}$ et $A_n\prec A_1$ alors aucun candidat n'est vainqueur par la méthode de \textsc{Condorcet}.
+
+\subsection{Raffinement}
+\definition{ Plusieurs raffinement possibles :
+\begin{itemize}
+\item Le vainqueur est celui qui gagne le plus de duels (méthode de \textsc{Copeland}).
+\item Le vainqueur est celui dont la pire défaite est \og meilleure \fg{} que celle des autres (méthode minimax).
+\item On peut appliquer la méthode de  \textsc{Bourda} après celle de \textsc{Condorcet}.
+\item On applique la méthode de \textsc{Kemeny}-\textsc{Yang}\footnotemark.
+\item On utilise la méthode des paires ordonnées.
+\end{itemize}
+}{}
+\footnotetext{Pour chaque ordre possible $C_{i_1}\prec C_{i_2}\prec \ldots \prec C_{i_n}$ avec $(i_1,\ldots,i_n)$ une permutation de $\ens{1,\ldots,n}$. On calcule le score comme étant : \[  \sum_{j<n} \text{Comp}(C_j,C_{j+1})\]et on prend le maximum.}
+
+
+\section{Méthode des paires ordonnées}
+
+\subsection{Rudiments de théorie des graphes}
+
+\definition{ 
+Un\textit{graphe fini}, $G = (V,E)$, est la donnée :
+\begin{enumerate}
+\item d'un ensemble fini $V$ (ensemble des sommets) ;
+\item d'un ensemble $E\dans \cP(V\fois V)$ (ensemble d'arêtes).
+\end{enumerate}
+}{}
+
+\paragraph{Exemple}
+\[ \xymatrix{ 
+ & 1 \ar[ld]\ar[dd]\ar[rd]\\
+ 4 & & 2 \ar[ld]\\
+  & 3
+}\]
+\[ V = \ens{1,2,3,4} \; ; \;  E = \ens{(1,2),(2,3),(1,3),(1,4)}.\]
+
+\definition{ 
+Un graphe $G = (V,E)$ est non orienté si pour tous $x,y\in V$, $(x,y)\in E$ implique $(y,x)\in E$.
+}{}
+
+\definition{ 
+Soit $G = (V,E)$ un graphe, soit $\ens{x_1,\ldots,x_n}=S\dans V$. $(x_1,\ldots,x_k)$ est un \textit{chemin} dans $G$ si pour tout $j<k$, $(x_j,x_{j+1})\in E$.
+
+$S$ est un \textit{chemin simple} si $S$ est un chemin et pour tous $i,j<k$, $x_i\neq x_j$ si $i\neq j$.
+}{}
+\paragraph{Exemple}
+\[ \xymatrix{
+ & 1\ar[ld] \ar[rd] \\
+ 6 & &2\ar[ld]\ar[d] \\
+ & 5 & 4\ar[r] & 3 \ar[lu] 
+}\]
+$(1,2,4,3,2)$ est un chemin, $(1,2,4,3)$ est un chemin simple.
+
+\definition{ 
+$S$ est un \textit{cycle} (ou circuit) de $G$ si c'est un chemin et $(x_k,x_1)\in E$.
+
+$S$ est un \textit{cycle simple} si c'est un chemin simple et un cycle.
+}{}
+
+\paragraph{Remarque}Les définitions sont plus simples dans le cas de graphes non orientés. 
+\paragraph{Exemple}Est un chemin est alors de la forme $x_1- x_2-x_3-x_4-\ldots$.
+
+\paragraph{Remarque}Si $G=(V,E)$ est un graphe orienté, on peut définir son graphe non orienté sous-jacent (appelé aussi symétrisé) de la façon suivante : $\barre{G} = (\barre{V},\barre{E})$ tel que $\barre{V}=V$ et $$\barre{E} = \enstq{(x,y),(y,x)}{(x,y)\in E}.$$
+
+\definition{ 
+Si $\barre{G}$ est un graphe non orienté. $\barre{G}$ est \textit{connexe} si pour tous $x,y\in E$ il existe $S$ dans $V$ tel que :
+\begin{enumerate}
+\item $S =\ens{x_1,\ldots,x_n}$ ;
+\item $x_1 = x$ et $x_k = y$ ;
+\item $(x_i,x_{i+1})\in \barre{E}$ pour tout $i<k$.
+\end{enumerate}
+}{}
+\definition{ 
+$G$ est connexe si, et seulement si, sont symétrisé $\barre{G}$ est connexe.
+}{}
+
+\definition{ 
+Soient $G = (V,E)$ et $x\in V$. $x$ est une \textit{source} si pour tout $y\neq x$ dans $V$, $(y,x)\not\in E$.
+}{}
+\paragraph{Exemple}
+\[ \xymatrix{ 
+ & 1 \ar[ld]\ar[rd]\\
+ 2 && 3\ar[ll]
+}\]
+$1$ est une source.
+
+\definition{ 
+Un graphe $G$ est sans cycle s'il n'admet pas de cycle simple orienté.
+}{}
+\paragraph{Exemple}
+\[ \xymatrix{ 
+& &1 \ar[ld]\\
+4 \ar[r] & 2 \ar[rr] && 3\ar[lu]
+} \]
+a un cycle $(1,2,3)$.
+\[\xymatrix{
+& &1 \ar[ld]\ar[rd]\\
+4 \ar[r] & 2 && 3\ar[ll]
+}  \]
+n'a pas de cycle.
+
+Cette propriété dépend donc de l'orientation du graphe.
+
+\proposition{ 
+Si $G$ est fini et acyclique et $\abs{E} >1$, alors $G$ a une source.
+}{}
+\demonstration{ 
+Supposons que $G$  n'a pas de source. Dans ce cas, on montre  que $G$ admet un chemin de longueur arbitraire. Soit $k\in \N$ la longueur maximale d'un chemin de $G$, soit $(x_1,\ldots,x_k)$ un tel chemin.
+\[ \xymatrix{
+x_1\ar[r] & x_2 \ar[r] & \ldots \ar[r]&x_k 
+}\]$G$ n'a pas de source donc il existe $y\in V$ tel que $(y,x_1)\in E$. Donc $(y,x_1,\ldots,x_n)$ est un chemin plus grand. 
+
+Comme $G$ est fini et comme $G$ admet des chemins de longueurs plus grandes que son nombre de sommets, $G$ a un cycle.
+}{}
+
+
+\subsubsection{Pour trouver les cycles}
+\paragraph{Cas d'un graphe non orienté}Dans le cas d'un tel graphe, on élimine petit à petit les sommets ayant au plus un voisin.
+
+\paragraph{Cas orienté}On se base sur un algorithme de parcours en profondeur.
+
+La version récursive se base sur un système de marquage. On pose $G = (V,E)$.
+On attribut $N$ pour non marqué, $T$ pour temporairement marqué et $M$ pour marqué.
+\begin{lstlisting}
+def Parcours(G):
+	N = V
+	M = []
+	T = []
+	while len(N)!=0:
+		x = N[0]
+		ParcoursProf(G,x)
+		
+def ParcoursProf(G,x):
+	if found(x,T):
+		return x  # il y a une boucle
+	if !found(x,M):	
+		T.append(x)		
+		for y in [y for (x,y) in E] # = V(x):
+			ParcoursProf(G,y)
+		M.append(x)
+		T.remove(x)
+		return M		
+\end{lstlisting}
+
+\paragraph{Exemple}
+\[\xymatrix{ 
+& 1 \ar[ld]\ar[rd]\\
+2 & & 3\ar[rd]\\
+& 4 \ar[ur] && 5 \ar[ll]\ar[ld]\\
+& & 6
+}\]
+\begin{itemize}
+\item $1\not\in T$, $T = \ens{1}$, $V(1) = \ens{2,3}$ ; appel de PProf(G,3) :
+\[\xymatrix{ 
+& 1_T \ar[ld]\ar[rd]\\
+2 & & 3\ar[rd]\\
+& 4 \ar[ur] && 5 \ar[ll]\ar[ld]\\
+& & 6
+}\]
+\item $3\not\in T$ et $3\not\in M$, $T = \ens{1,3}$, $V(3) = \ens{5}$ ; appel de PProf(G,5) :
+\[\xymatrix{ 
+& 1_T \ar[ld]\ar[rd]\\
+2 & & 3_T\ar[rd]\\
+& 4 \ar[ur] && 5 \ar[ll]\ar[ld]\\
+& & 6
+}\]
+\item $5\not\in T$ et $5\not\in M$, $T = \ens{1,3,5}$, $V(5) = \ens{4,6}$ ; appel de PProf(G,6) :
+
+\[\xymatrix{ 
+& 1_T \ar[ld]\ar[rd]\\
+2 & & 3_T\ar[rd]\\
+& 4 \ar[ur] && 5_T \ar[ll]\ar[ld]\\
+& & 6
+}\]
+\item $6\not\in T$ et $6\not\in M$, $T = \ens{1,3,5,6}$ et $V(6) = \vide$ ; terminé pour $6$ car pas de voisin donc $M = \ens{6}$ et $T=\ens{1,3,5}$ :
+\[\xymatrix{ 
+& 1_T \ar[ld]\ar[rd]\\
+2 & & 3_T\ar[rd]\\
+& 4 \ar[ur] && 5_T \ar[ll]\ar[ld]\\
+& & 6_M
+}\]
+
+\item PProf(G,4) puisque $5$ a deux voisins :
+$4\not\in T$ et $4\not\in M$, $T = \ens{1,3,5,4}$, $V = \ens{3}$ donc on appelle PProf(G,3). 3  est marqué donc on sort et on a un cycle.
+\end{itemize}
+
+\subsection{Méthode des paires ordonnées (méthode de \textsc{Tideman})}
+
+\paragraph{Exemple}On a 5 candidats : $\cC = \ens{A,B,C,D,E}$.
+\[ \xymatrix{
+& A\ar[rd] \\
+E\ar[ur]\ar[rrd] & & B\ar[ld] \ar[ll]\\
+& D \ar[uu]\ar[ul]& C\ar[l]\ar[luu]
+}\]
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline 
+Comparaison & Score \\ 
+\hline 
+$A,B$ & 55 \\ 
+$B,A$ & 45 \\
+\hline
+$A,C$ & 35 \\  
+$C,A$ & 75 \\
+\hline
+$B,C$ & 12 \\  
+$C,B$ & 88 \\
+\hline
+$C,D$ & 76 \\  
+$D,C$ & 24 \\
+\hline
+$C,E$ & 33 \\  
+$E,C$ & 67 \\
+\hline
+$A,D$ & 21 \\  
+$D,A$ & 79 \\   
+\hline
+$A,E$ & 49 \\  
+$E,A$ & 51 \\
+\hline
+$B,D$ & 70 \\  
+$D,B$ & 30 \\
+\hline
+$B,E$ & 52 \\  
+$E,B$ & 48 \\     
+\hline
+$D,E$ & 53 \\  
+$E,D$ & 47 \\ 
+\hline
+\end{tabular} 
+\end{center}
+Aucun candidat n'est vainqueur de \textsc{Condorcet}.
+
+Tri des duels :
+\begin{enumerate}
+\item $C,B$ : 88
+\item $D,A$ : 79
+\item $C,D$ : 76
+\item $C,A$ : 75
+\item $B,D$ : 70
+\item $E,C$ : 67
+\item $A,B$ : 55
+\item $D,E$ : 53 
+\item $B,E$ : 52
+\item $E,A$ : 51
+\end{enumerate}
+
+On construit un graphe petit à petit en insérant es sommets par ordre de préférence et en évitant les cycles.
+
+\[\xymatrix{ 
+&  C \ar[rd]\ar[d] \\
+& D\ar[rd] \ar[rd] & B\ar[l]\\
+E \ar[uur] \ar[rr]&& A
+}\]
+
+On pose \[T_0 = \enstq{(c_1,c_2,s)}{c_1,c_2\in\cC, \; s = \text{comp}(c_1,c_2) = \sum_{v\in V}\mathbf{1}_{f(v_1,c_1)>f(v_1,c_2)}}. \]
+\begin{enumerate}
+\item Dans $T_0$ on ne regarde que les triplets tels que comp$(c_1,c_2) >$ comp$(c_2,c_1)$.
+\item On trie $T$ par ordre décroissant selon la valeur de $s$. Soit $S$ la suite ordonnée obtenue.
+\item On construit $G$ de sommets $V = \cC$ et d'ensemble d'arêtes $E\dans\enstq{(c_j,d_j)}{(c_j,d_j,s)\in T}$ avec $E$ construit par :
+\begin{lstlisting}
+E = []
+while len(S)!=0:
+	e = [S[0][0],S[0][1]]
+	if estAcyclique(G=(C,E.append(e))):
+		E.append(e)
+		S = S[1:]
+\end{lstlisting}
+\end{enumerate}
+
+\lemme{ 
+Soit $G =(V,E)$ un graphe orienté fini tel que
+\[\forall x,y\in V, \; (x,y)\in E \ou (y,x)\in E \]et tel que $G$ n'a pas de cycle.
+
+Alors $G$ a une source unique.
+}{}
+\demonstration{ 
+Comme $G$ n'a pas de cycle, $G$ a une source.
+
+Soient $x\neq y$ deux sources. Comme $G$ est un tournoi (vérifie la première propriété) alors soit $(x,y)\in E$ soit $(y,x)\in E$ donc ne peut être une source pour l'un des deux.
+}{}
+
+\corollaire{ 
+La méthode de \textsc{Tideman} produit un et un seul vainqueur.
+}{}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
